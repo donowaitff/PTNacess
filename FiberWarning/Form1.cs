@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PTN接入层巡检工具
+namespace FiberWarning
 {
-    public partial class Form1 : Form
+    public partial class WinForm : Form
     {
-        public Form1()
+        public WinForm()
         {
             InitializeComponent();
         }

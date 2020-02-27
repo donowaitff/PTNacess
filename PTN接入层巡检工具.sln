@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTN接入层巡检工具", "PTN接入层巡检工具\PTN接入层巡检工具.csproj", "{F7C979B4-CC9A-4F07-B83E-316896523524}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTNAcessOp", "PTN接入层巡检工具\PTNAcessOp.csproj", "{F7C979B4-CC9A-4F07-B83E-316896523524}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTEMerge", "LTEMerge\LTEMerge.csproj", "{FFEDB1AF-72D9-4471-AA8F-BDF037F497C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTNAcessInspection", "PTNAcessInspection\PTNAcessInspection.csproj", "{30E614F8-3C70-4B00-B6B2-E5506AB55F0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiberWarning", "FiberWarning\FiberWarning.csproj", "{06A2C0A3-03C1-4A7B-B744-103478C71D63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{F7C979B4-CC9A-4F07-B83E-316896523524}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7C979B4-CC9A-4F07-B83E-316896523524}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7C979B4-CC9A-4F07-B83E-316896523524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFEDB1AF-72D9-4471-AA8F-BDF037F497C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFEDB1AF-72D9-4471-AA8F-BDF037F497C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFEDB1AF-72D9-4471-AA8F-BDF037F497C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFEDB1AF-72D9-4471-AA8F-BDF037F497C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30E614F8-3C70-4B00-B6B2-E5506AB55F0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30E614F8-3C70-4B00-B6B2-E5506AB55F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30E614F8-3C70-4B00-B6B2-E5506AB55F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30E614F8-3C70-4B00-B6B2-E5506AB55F0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06A2C0A3-03C1-4A7B-B744-103478C71D63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06A2C0A3-03C1-4A7B-B744-103478C71D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06A2C0A3-03C1-4A7B-B744-103478C71D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06A2C0A3-03C1-4A7B-B744-103478C71D63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

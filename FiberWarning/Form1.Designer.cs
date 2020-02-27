@@ -1,6 +1,6 @@
-﻿namespace PTN接入层巡检工具
+﻿namespace FiberWarning
 {
-    partial class Form1
+    partial class WinForm
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,10 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WinForm));
+            this.SuspendLayout();
+            // 
+            // WinForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "WinForm";
+            this.Text = "光缆预警系统";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
