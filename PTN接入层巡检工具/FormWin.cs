@@ -21,7 +21,10 @@ namespace PTNAccessOp
         }
         public static class common
         {
+            //添加dataset
             public static DataSet DataSet;
+            //输出dataset
+            public static DataSet DS;
         }
         /// <summary>
         /// 读取光功率csv文件
@@ -163,7 +166,7 @@ namespace PTNAccessOp
                         //将每个CSV文件转换为datatable
                         ExcelHelper excelHelper = new ExcelHelper(filename);
                         //表名错误时，默认为第一个表
-                        DataTable dt_Csv = excelHelper.ExcelToDataTable("PWE3 ETH", true, 8);
+                        DataTable dt_Csv = excelHelper.ExcelToDataTable("Sheet1", true, 8);
                         //设置datable名称为CSV文件名（不带扩展）
                         dt_Csv.TableName = System.IO.Path.GetFileNameWithoutExtension(filename);
                         Console.WriteLine(dt_Csv.Rows.Count);
@@ -228,6 +231,51 @@ namespace PTNAccessOp
         private void FormWin_Load(object sender, EventArgs e)
         {
             common.DataSet = new DataSet();
+            common.DS = new DataSet();
+            #region //读取默认表格
+
+            
+            string Path = Directory.GetCurrentDirectory();
+            try
+            {
+                string fileName = Directory.GetCurrentDirectory() + "\\光功率模板.xls";
+                if (!File.Exists(fileName))
+                {
+                    MessageBox.Show("配置文件不存在或被打开占用，请确认文件完整性", "警告", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Environment.Exit(0);
+                }
+                else
+                {
+                    #region  //读取配置文件，添加datatable到dataset
+                    try
+                    {
+                        using (ExcelHelper excelHelper = new ExcelHelper(fileName))
+                        {
+                            //DataSetG.DS = new DataSet();
+                            #region 添加表名及采集命令对应关系，直接读取Excel表生成表名
+                            DataTable tblStrCmd = excelHelper.ExcelToDataTableA("光功率模板", true);
+                            tblStrCmd.TableName = "光功率模板";
+                            common.DS.Tables.Add(tblStrCmd);
+                            Console.WriteLine();
+                            #endregion
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        MessageBox.Show("提示： " + "请关闭-光功率模板及入口Excel表后重新运行！");
+                        Environment.Exit(0);
+                    }
+                    #endregion  //读取配置文件，添加datatable到dataset
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Exception: " + ex.Message + "请关闭文件后重新运行");
+            }
+            #endregion //读取默认表格
         }
         /// <summary>
         /// 生成数据报表
@@ -256,6 +304,8 @@ namespace PTNAccessOp
             foreach (DataRow dr in ds.Tables[dt_Power].Rows)
             {
                 dr["网元名称"] = dr["网元名称"].ToString() + "-" + dr["槽位ID"].ToString() + "-"+dr["单板名称"].ToString() + "-" + dr["端口"].ToString();
+                //去掉-子架1，两个文件匹配
+                dr["网元名称"] = dr["网元名称"].ToString().Replace("子架1-","").Replace("(端口-", "(PORT-");
                 //Console.WriteLine(dr["网元名称"]);
             }
             //合并光功率表前四列 网元名称	槽位ID	单板名称	端口
@@ -263,10 +313,91 @@ namespace PTNAccessOp
             {
                 dr["源网元"] = dr["源网元"].ToString() + "-" + dr["源端口"].ToString();
                 dr["宿网元"] = dr["宿网元"].ToString() + "-" + dr["宿端口"].ToString();
-               // Console.WriteLine(dr["源网元"]);
+                //去掉-子架1，两个文件匹配
+                dr["源网元"] = dr["源网元"].ToString().Replace("子架1-", "");
+                //去掉-子架1，两个文件匹配
+                dr["宿网元"] = dr["宿网元"].ToString().Replace("子架1-", "");
+                // Console.WriteLine(dr["源网元"]);
             }
             //添加列名
-
+            #region //将光缆连接表查询、复制至光功率模板表中
+            foreach (DataRow dr in ds.Tables[dt_Fiber].Rows)
+            {
+                //获取源宿网元名称
+                string str_SrcName = dr["源网元"].ToString();
+                string str_DstName = dr["宿网元"].ToString();
+                //创建光功率模板行
+                DataRow row = common.DS.Tables["光功率模板"].NewRow();
+                row["源网元"] = str_SrcName;
+                row["宿网元"] = str_DstName;
+                DataRow[] dr_Src = ds.Tables[dt_Power].Select("网元名称 = '" + str_SrcName + "'");
+                //查找到数据
+                if (dr_Src.Length>0)
+                {
+                    //对光功率模板表进行赋值
+                    for (int i = 4; i < ds.Tables[dt_Power].Columns.Count; i++)
+                    {
+                        string str_Column = ds.Tables[dt_Power].Columns[i].Caption;
+                        row["源网元_" + str_Column] = dr_Src[0][str_Column];
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("未查询到该端口光功率，请检查:" + str_SrcName);
+                }
+                DataRow[] dr_Dst = ds.Tables[dt_Power].Select("网元名称 = '" + str_DstName + "'");
+                if (dr_Dst.Length > 0)
+                {
+                    //对光功率模板表进行赋值
+                    for (int i = 4; i < ds.Tables[dt_Power].Columns.Count; i++)
+                    {
+                        string str_Column = ds.Tables[dt_Power].Columns[i].Caption;
+                        row["宿网元_" + str_Column] = dr_Dst[0][str_Column];
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("未查询到该端口光功率，请检查:"+str_DstName);
+                }
+                //完成查询赋值
+                #region // 计算光缆衰耗注意部分站点光功率未查询出来
+                //string转换为int型
+                 
+                if (row["源网元_输入光功率(dBm)"].ToString().Length>1&& row["宿网元_输出光功率(dBm)"].ToString().Length > 1)
+                {
+                    //Console.WriteLine(row["宿网元_输出光功率(dBm)"].ToString());
+                    //Console.WriteLine(row["源网元_输入光功率(dBm)"].ToString());
+                    row["正向光缆衰耗"] = double.Parse(row["宿网元_输出光功率(dBm)"].ToString()) - double.Parse(row["源网元_输入光功率(dBm)"].ToString());
+                }
+                else
+                {
+                    row["正向光缆衰耗"] = "未查询到输入输出";
+                }
+                if (row["宿网元_输入光功率(dBm)"].ToString().Length > 1 && row["源网元_输出光功率(dBm)"].ToString().Length > 1)
+                {
+                    //Console.WriteLine(row["源网元_输出光功率(dBm)"].ToString());
+                    //Console.WriteLine(row["宿网元_输入光功率(dBm)"].ToString());
+                    row["反向光缆衰耗"] = double.Parse(row["源网元_输出光功率(dBm)"].ToString()) - double.Parse(row["宿网元_输入光功率(dBm)"].ToString());
+                }
+                else
+                {
+                    row["反向光缆衰耗"] = "未查询到输入输出";
+                }
+                if (row["正向光缆衰耗"].ToString().Length<8&&row["反向光缆衰耗"].ToString().Length <8)
+                {
+                    row["两芯光缆衰耗差值"] = double.Parse(row["正向光缆衰耗"].ToString()) - double.Parse(row["反向光缆衰耗"].ToString());
+                }
+                #endregion // 计算光缆衰耗注意部分站点光功率未查询出来
+                //添加行
+                common.DS.Tables["光功率模板"].Rows.Add(row);
+                //Console.WriteLine(common.DS.Tables["光功率模板"].Rows.Count);
+               // ExcelHelper excelHelper2 = new ExcelHelper("查询输出.xls");
+               
+                   
+            }
+            #endregion
+            ExcelHelper.DataSetToExcel(common.DS, "查询输出aaaa");
+            ExcelHelper.DataSetToExcel(ds, "查询输出aaaaaa");
             Console.WriteLine("");
             //查询对比数据
             //尾纤连接关系为基础

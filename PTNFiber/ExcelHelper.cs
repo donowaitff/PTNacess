@@ -100,7 +100,7 @@ namespace PTNAccessOp
         /// <param name="sheetName">excel工作薄sheet的名称</param>
         /// <param name="isFirstRowColumn">第一行是否是DataTable的列名</param>
         /// <returns>返回的DataTable</returns>
-        public  DataTable ExcelToDataTableA(string sheetName, bool isFirstRowColumn)
+        public  DataTable ExcelToDataTable(string sheetName, bool isFirstRowColumn)
         {
             ISheet sheet = null;
             DataTable data = new DataTable();
@@ -191,7 +191,7 @@ namespace PTNAccessOp
             ISheet sheet = null;
             DataTable data = new DataTable();
             int startRow = coulmnNum;
-            //try
+            try
             {
                 fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                 if (fileName.IndexOf(".xlsx") > 0) // 2007版本
@@ -262,11 +262,11 @@ namespace PTNAccessOp
 
                 return data;
             }
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("Exception: " + ex.Message);
-            //    return null;
-            //}
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                return null;
+            }
         }
         public static void DataSetToExcel(DataSet ds, string filename)
         {

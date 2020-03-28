@@ -20,7 +20,6 @@ namespace LTEMerge
         private void btn_ReadLte_Click(object sender, EventArgs e)
         {
             DataSet ds_Lte = new DataSet();
-
             string strPath = System.IO.Directory.GetCurrentDirectory();
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             //190617新增打开窗口替换关系表
@@ -36,7 +35,7 @@ namespace LTEMerge
                 //获取到多选的文件名称
                 Console.WriteLine(openFileDialog1.FileNames);
 
-                try
+                //try
                 {
                     //遍历多文件名称
                     foreach (var filename in openFileDialog1.FileNames)
@@ -63,15 +62,22 @@ namespace LTEMerge
                     string fileName = "LTE合并业务" + fileNameOld + ".xlsx";
                     ExcelHelper excelHelper2 = new ExcelHelper(fileName);
                     excelHelper2.DataTableToExcel(ds_Lte.Tables[0], "LTE业务合并数据", true);
+                    DataView dv = new DataView();
+                    dv = ds_Lte.Tables[0].DefaultView;
+                    dv.RowFilter = "保护类型49 = '保护组'";
+                    DataTable dtGongZuo = dv.ToTable();
+                    ExcelHelper excelHelper3 = new ExcelHelper("主用"+fileName);
+                    excelHelper3.DataTableToExcel(dtGongZuo, "LTE业务合并数据", true);
+                    Console.WriteLine(dtGongZuo.Rows.Count);
                     MessageBox.Show("已完成合并LTE数据 " + ds_Lte.Tables[0].Rows.Count + " 条,请使用！");
                     //ExcelHelper.DataSetToExcel(ds_Lte, fileName + "第一个表合并数据.xlsx");
                    
                 }
                 
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Exception: " + ex.Message);
-                }
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine("Exception: " + ex.Message);
+                //}
 
             }
         }
